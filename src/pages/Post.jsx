@@ -53,15 +53,14 @@ function Post() {
     );
   }
 
-  // Support both string fileId and object { $id: ... }
+  // ✅ Handle featured image
   const fileId =
     typeof post.featuredImage === "string"
       ? post.featuredImage
       : post.featuredImage?.$id;
-
   const imageUrl = fileId ? appwriteService.getFileView(fileId) : null;
 
-  // Decode HTML entities if the content is escaped
+  // ✅ Decode HTML entities
   const decodeHtmlEntities = (html) => {
     try {
       const doc = new DOMParser().parseFromString(html, "text/html");
@@ -78,7 +77,7 @@ function Post() {
   const decoded = decodeHtmlEntities(rawContent);
   const sanitized = DOMPurify.sanitize(decoded);
 
-  // 🔑 Extract logged-in user id safely
+  // ✅ Logged-in user id
   const loggedInUserId = userData?.$id || userData?.id;
 
   return (
@@ -87,11 +86,13 @@ function Post() {
         <h1 className="mb-4 text-3xl font-bold">{post.title || "Untitled"}</h1>
 
         {imageUrl && (
-          <img
-            src={imageUrl}
-            alt={post.title || "featured image"}
-            className="object-cover w-full mb-6 shadow-md rounded-xl"
-          />
+          <div className="w-full h-[600px] mb-6 flex items-center justify-center bg-gray-100 rounded-xl shadow-md">
+            <img
+              src={imageUrl}
+              alt={post.title || "featured image"}
+              className="object-contain max-w-full max-h-full rounded-xl"
+            />
+          </div>
         )}
 
         {sanitized ? (

@@ -1,42 +1,45 @@
 import React, { useState } from "react";
 import authService from "../appwrite/auth";
 import { Link, useNavigate } from "react-router-dom";
-import { login } from "../store/authSlice";
+import { login as authLogin } from "../store/authSlice";
 import { Button, Input, Logo } from "./index";
 import { useDispatch } from "react-redux";
 import { useForm } from "react-hook-form";
 
 function Signup() {
   const navigate = useNavigate();
-  const [error, setError] = useState("");
   const dispatch = useDispatch();
   const { register, handleSubmit } = useForm();
+  const [error, setError] = useState("");
 
   const create = async (data) => {
     setError("");
     try {
-      const userData = await authService.createAccount(data);
-      if (userData) {
-        const userData = await authService.getCurrentUser();
+      // ✅ Create account and auto-login handled by authService
+      const newUser = await authService.createAccount(data);
 
-        if (userData) dispatch(login(userData));
+      if (newUser) {
+        console.log("✅ Account created & logged in:", newUser);
+        dispatch(authLogin(newUser));
         navigate("/");
+      } else {
+        setError("Account creation failed. Please try again.");
       }
-    } catch (error) {
-      setError(error);
+    } catch (err) {
+      console.error("❌ Signup error:", err);
+      setError(err?.message || "Signup failed");
     }
   };
 
   return (
     <div className="flex items-center justify-center">
-      <div
-        className={`mx-auto w-full max-w-lg bg-gray-100 rounded-xl p-10 border border-black/10`}
-      >
+      <div className="w-full max-w-lg p-10 mx-auto bg-gray-100 border rounded-xl border-black/10">
         <div className="flex justify-center mb-2">
           <span className="inline-block w-full max-w-[100px]">
             <Logo width="100%" />
           </span>
         </div>
+
         <h2 className="text-2xl font-bold leading-tight text-center">
           Sign up to create account
         </h2>
@@ -49,38 +52,34 @@ function Signup() {
             Sign In
           </Link>
         </p>
+
         {error && <p className="mt-8 text-center text-red-600">{error}</p>}
 
-        <form onSubmit={handleSubmit(create)}>
+        <form onSubmit={handleSubmit(create)} className="mt-6">
           <div className="space-y-5">
             <Input
-              label="Name: "
+              label="Name:"
               placeholder="Enter your name"
-              {...register("name", {
-                required: true,
-              })}
+              {...register("name", { required: true })}
             />
             <Input
-              label="Email: "
+              label="Email:"
               placeholder="Enter your email"
               type="email"
               {...register("email", {
                 required: true,
                 validate: {
-                  matchPatern: (value) =>
+                  matchPattern: (value) =>
                     /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(value) ||
-                    "Email address must be a valid address",
+                    "Enter a valid email",
                 },
               })}
             />
-
             <Input
-              label="Password: "
+              label="Password:"
               type="password"
               placeholder="Enter your password"
-              {...register("password", {
-                required: true,
-              })}
+              {...register("password", { required: true })}
             />
             <Button type="submit" className="w-full">
               Create Account

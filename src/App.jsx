@@ -6,9 +6,6 @@ import { login, logout } from "./store/authSlice";
 import { Footer, Header } from "./components";
 import { Outlet } from "react-router-dom";
 
-console.log("App.js loaded");
-
-
 function App() {
   const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
@@ -18,25 +15,37 @@ function App() {
       .getCurrentUser()
       .then((userData) => {
         if (userData) {
+          // ✅ Save user data to Redux
           dispatch(login({ userData }));
         } else {
           dispatch(logout());
         }
       })
       .finally(() => setLoading(false));
-  }, []);
+  }, [dispatch]);
 
-  return !loading ? (
-    <div className="flex flex-wrap content-between min-h-screen bg-gray-400">
-      <div className="block w-full">
-        <Header />
-        <main>
-          <Outlet />
-        </main>
-        <Footer />
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gray-100">
+        <p className="text-lg font-semibold text-gray-700">Loading...</p>
       </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col min-h-screen bg-gray-50">
+      {/* ✅ Header */}
+      <Header />
+
+      {/* ✅ Main outlet */}
+      <main className="flex-grow">
+        <Outlet />
+      </main>
+
+      {/* ✅ Footer */}
+      <Footer />
     </div>
-  ) : null;
+  );
 }
 
 export default App;

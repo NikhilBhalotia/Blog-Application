@@ -15,19 +15,20 @@ export class Service {
     this.bucket = new Storage(this.client);
   }
 
-  // ✅ Create Post with userId
+  // ✅ Create Post (unique ID, but slug saved as field)
   async createPost({ title, slug, content, featuredImage, status, userId }) {
     try {
       return await this.databases.createDocument(
         conf.appwriteDatabaseId,
         conf.appwriteCollectionId,
-        slug,
+        ID.unique(), // Always unique document ID
         {
           title,
+          slug, // store slug as field instead of ID
           content,
           featuredImage,
           status,
-          userId, // required attribute
+          userId,
         }
       );
     } catch (error) {
@@ -36,19 +37,23 @@ export class Service {
     }
   }
 
-  // ✅ Update Post also includes userId
-  async updatePost(slug, { title, content, featuredImage, status, userId }) {
+  // ✅ Update Post (use Appwrite's $id instead of slug)
+  async updatePost(
+    id,
+    { title, slug, content, featuredImage, status, userId }
+  ) {
     try {
       return await this.databases.updateDocument(
         conf.appwriteDatabaseId,
         conf.appwriteCollectionId,
-        slug,
+        id, // Appwrite document ID
         {
           title,
+          slug,
           content,
           featuredImage,
           status,
-          userId, // required attribute
+          userId,
         }
       );
     } catch (error) {
@@ -57,12 +62,13 @@ export class Service {
     }
   }
 
-  async deletePost(slug) {
+  // ✅ Delete Post (by document $id)
+  async deletePost(id) {
     try {
       await this.databases.deleteDocument(
         conf.appwriteDatabaseId,
         conf.appwriteCollectionId,
-        slug
+        id
       );
       return true;
     } catch (error) {
@@ -71,12 +77,13 @@ export class Service {
     }
   }
 
-  async getPost(slug) {
+  // ✅ Get Post (by document $id)
+  async getPost(id) {
     try {
       return await this.databases.getDocument(
         conf.appwriteDatabaseId,
         conf.appwriteCollectionId,
-        slug
+        id
       );
     } catch (error) {
       console.log(error);
@@ -84,7 +91,26 @@ export class Service {
     }
   }
 
-  async getPosts(queries = [Query.equal("status", "active")]) {
+  // ✅ Fetch only logged-in user's posts
+  async getPosts(userId, queries = [Query.equal("status", "active")]) {
+    try {
+      return await this.databases.listDocuments(
+        conf.appwriteDatabaseId,
+        conf.appwriteCollectionId,
+        [
+          Query.equal("status", "active"),
+          Query.equal("userId", userId),
+          ...queries,
+        ]
+      );
+    } catch (error) {
+      console.log(error);
+      return false;
+    }
+  }
+
+  // ✅ Fetch all active posts (for Home page feed)
+  async getAllPosts(queries = [Query.equal("status", "active")]) {
     try {
       return await this.databases.listDocuments(
         conf.appwriteDatabaseId,
@@ -92,12 +118,12 @@ export class Service {
         queries
       );
     } catch (error) {
-      console.log(error);
+      console.error("Appwrite service :: getAllPosts :: error", error);
       return false;
     }
   }
 
-  // ✅ file upload service
+  // ✅ File upload
   async uploadFile(file) {
     try {
       return await this.bucket.createFile(
@@ -124,7 +150,7 @@ export class Service {
   getFilePreview(fileId) {
     return this.bucket.getFilePreview(conf.appwriteBucketId, fileId);
   }
-  
+
   getFileView(fileId) {
     return this.bucket.getFileView(conf.appwriteBucketId, fileId);
   }

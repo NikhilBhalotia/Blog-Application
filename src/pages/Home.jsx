@@ -1,19 +1,33 @@
 import React, { useEffect, useState } from "react";
 import appwriteService from "../appwrite/config";
+import authService from "../appwrite/auth";
 import { Container, PostCard } from "../components";
 
 function Home() {
   const [posts, setPosts] = useState([]);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
-    appwriteService.getPosts().then((posts) => {
-      if (posts) {
-        setPosts(posts.documents.slice(0, 1));
+    const fetchUserPosts = async () => {
+      const currentUser = await authService.getCurrentUser();
+      setUser(currentUser);
+
+      if (!currentUser) return;
+
+      const response = await appwriteService.getPosts(currentUser.$id);
+      if (response) {
+        // Sort by created date (latest first) and take top 3
+        const sorted = response.documents.sort(
+          (a, b) => new Date(b.$createdAt) - new Date(a.$createdAt)
+        );
+        setPosts(sorted.slice(0, 3));
       }
-    });
+    };
+
+    fetchUserPosts();
   }, []);
 
-  if (posts.length === 0) {
+  if (!user) {
     return (
       <div className="flex items-center justify-center min-h-[70vh] text-center bg-gray-100">
         <Container>
@@ -25,7 +39,7 @@ function Home() {
             <span className="font-semibold text-blue-600 cursor-pointer hover:underline">
               Login
             </span>{" "}
-            to read the latest posts.
+            to see your recent posts.
           </p>
         </Container>
       </div>
@@ -36,13 +50,20 @@ function Home() {
     <div className="w-full py-10 bg-gray-100">
       <Container>
         <h2 className="pb-2 mb-6 text-2xl font-semibold text-gray-800 border-b-2 border-gray-300">
-          Featured Post
+          Your Recent Posts
         </h2>
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {posts.map((post) => (
-            <PostCard key={post.$id} {...post} />
-          ))}
-        </div>
+
+        {posts.length === 0 ? (
+          <p className="text-lg text-gray-600">
+            You haven’t created any posts yet.
+          </p>
+        ) : (
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {posts.map((post) => (
+              <PostCard key={post.$id} {...post} />
+            ))}
+          </div>
+        )}
       </Container>
     </div>
   );

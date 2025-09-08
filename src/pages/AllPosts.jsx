@@ -1,23 +1,30 @@
 import React, { useState, useEffect } from "react";
 import appwriteService from "../appwrite/config";
+import authService from "../appwrite/auth";
 import { Container, PostCard } from "../components";
 
 function AllPosts() {
   const [posts, setPosts] = useState([]);
 
   useEffect(() => {
-    appwriteService.getPosts([]).then((posts) => {
-      if (posts) {
-        setPosts(posts.documents);
+    const fetchPosts = async () => {
+      const currentUser = await authService.getCurrentUser();
+      if (!currentUser) return;
+
+      const response = await appwriteService.getPosts(currentUser.$id);
+      if (response) {
+        setPosts(response.documents);
       }
-    });
+    };
+
+    fetchPosts();
   }, []);
 
   return (
     <div className="w-full py-10 bg-gray-100 min-h-[80vh]">
       <Container>
         <h2 className="pb-3 mb-8 text-3xl font-bold text-gray-800 border-b-2 border-gray-300">
-          All Posts
+          My Posts
         </h2>
 
         {posts.length === 0 ? (
