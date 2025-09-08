@@ -134,29 +134,31 @@ Vercel serves the frontend.
 Appwrite handles API requests like login, createPost, uploadFile, etc.
 
 ## Project Structure Explained
-src/
-│── appwrite/         
-│   ├── auth.js
-│   ├── config.js
-│── components/       
-│   ├── Header.jsx
-│   ├── Footer.jsx
-│   ├── PostCard.jsx
-│   ├── AuthLayout.jsx# Protects routes
-│── pages/            
-│   ├── Home.jsx
-│   ├── Login.jsx
-│   ├── Signup.jsx
-│   ├── Profile.jsx
-│   ├── AddPost.jsx
-│   ├── EditPost.jsx
-│   ├── Post.jsx
-│   ├── AllPosts.jsx
-│── store/            
-│   ├── authSlice.js
-│   ├── store.js      
-│── App.jsx           
-│── main.jsx         
+| Path / File          | Description                                            |
+| -------------------- | ------------------------------------------------------ |
+| **src/appwrite/**    | Appwrite service files                                 |
+| ├── `auth.js`        | Authentication logic (login, signup, get current user) |
+| ├── `config.js`      | Appwrite service for database & storage (CRUD)         |
+| **src/components/**  | Reusable UI components                                 |
+| ├── `Header.jsx`     | Navbar with links, logout, and profile icon            |
+| ├── `Footer.jsx`     | Footer section                                         |
+| ├── `PostCard.jsx`   | Card to display individual posts                       |
+| ├── `AuthLayout.jsx` | Protects routes (redirects if not authenticated)       |
+| **src/pages/**       | Main application pages                                 |
+| ├── `Home.jsx`       | Landing page showing recent posts                      |
+| ├── `Login.jsx`      | Login form                                             |
+| ├── `Signup.jsx`     | Signup form                                            |
+| ├── `Profile.jsx`    | Profile management (update name, email, password, pic) |
+| ├── `AddPost.jsx`    | Create a new post                                      |
+| ├── `EditPost.jsx`   | Edit an existing post                                  |
+| ├── `Post.jsx`       | Single post view                                       |
+| ├── `AllPosts.jsx`   | Show all posts of the current user                     |
+| **src/store/**       | Redux state management                                 |
+| ├── `authSlice.js`   | Redux slice for authentication                         |
+| ├── `store.js`       | Redux store setup                                      |
+| **src/App.jsx**      | Root layout with header and footer                     |
+| **src/main.jsx**     | Application entry point + router setup                 |
+  
 
 ## What I Learned (In-Depth)
 
