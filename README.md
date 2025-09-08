@@ -136,27 +136,27 @@ Appwrite handles API requests like login, createPost, uploadFile, etc.
 ## Project Structure Explained
 src/
 │── appwrite/         
-│   ├── auth.js       # Authentication logic (login, signup, get current user)
-│   ├── config.js     # Appwrite service for database & storage (CRUD)
+│   ├── auth.js
+│   ├── config.js
 │── components/       
-│   ├── Header.jsx    # Navbar with links, logout, and profile icon
-│   ├── Footer.jsx    # Footer section
-│   ├── PostCard.jsx  # Card to display individual posts
+│   ├── Header.jsx
+│   ├── Footer.jsx
+│   ├── PostCard.jsx
 │   ├── AuthLayout.jsx# Protects routes
 │── pages/            
-│   ├── Home.jsx      # Landing page showing recent posts
-│   ├── Login.jsx     # Login form
-│   ├── Signup.jsx    # Signup form
-│   ├── Profile.jsx   # Profile management (update name, email, password, pic)
-│   ├── AddPost.jsx   # Create new post
-│   ├── EditPost.jsx  # Edit existing post
-│   ├── Post.jsx      # Single post view
-│   ├── AllPosts.jsx  # Show all posts of current user
+│   ├── Home.jsx
+│   ├── Login.jsx
+│   ├── Signup.jsx
+│   ├── Profile.jsx
+│   ├── AddPost.jsx
+│   ├── EditPost.jsx
+│   ├── Post.jsx
+│   ├── AllPosts.jsx
 │── store/            
-│   ├── authSlice.js  # Redux slice for authentication
-│   ├── store.js      # Redux store setup
-│── App.jsx           # Root layout with header/footer
-│── main.jsx          # Router setup
+│   ├── authSlice.js
+│   ├── store.js      
+│── App.jsx           
+│── main.jsx         
 
 ## What I Learned (In-Depth)
 
